@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1539040771 source:/home/pf/WorkspaceC/Trabalho1_ED/lista.c
+	<stdio.h>
+	<stdlib.h>
+	"lista.h"
+
+1539040543 /home/pf/WorkspaceC/Trabalho1_ED/lista.h
+
+1539034522 source:/home/pf/WorkspaceC/Trabalho1_ED/main.c
+	<stdio.h>
+	<stdlib.h>
+	"lista.h"
+
