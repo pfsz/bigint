@@ -209,22 +209,263 @@ Lista* soma(Lista* n1, Lista* n2){
 }
 **/
 
-Lista* subtrai(Lista* l1, Lista* l2){
+// recebe dois numeros com sinais diferentes, lista com maior unidade
+Lista* verifica_tamanho_maior(Lista* l1, Lista* l2){
+    Lista *aux1 = l1;
+    Lista *aux2 = l2;
+    Lista *negativo = NULL, *positivo = NULL;
 
+    if(verifica_negativa(l1)){
+        negativo = l1;
+        positivo = l2;
+    }
+    else{
+        negativo = l2;
+        positivo = l1;
+    }
+
+    int tamPositivo = tamanho_lista(positivo), tamNegativo = tamanho_lista(negativo)-1;
+    if(tamNegativo > tamPositivo) return negativo;
+    else if(tamPositivo > tamNegativo) return positivo;
+    else{
+        if(maior_valor_numero(l1,l2)!=NULL){
+            return maior_valor_numero(l1,l2);
+        }
+        return NULL;
+    }
+}
+
+// numeros do mesmo tamanho (sem contar o sinal negativo)
+// retorna a lista com a maior unidade;
+Lista* maior_valor_numero(Lista* l1, Lista* l2){
+    if(iguais(l1, l2)) return NULL;
+    Lista *desvirada1 = l1, *aux1 = l1, *desvirada2 = l2, *aux2 = l2;
+    while(aux1!=NULL && aux2!=NULL && aux1->valor!='-' && aux2->valor!='-'){
+        desvirada1 = insere(desvirada1, aux1->valor);
+        aux1 = aux1->proximo;
+        desvirada2 = insere(desvirada2, aux2->valor);
+        aux2 = aux2->proximo;
+    }
+    //listas desviradas sem sinal
+    Lista * maior = NULL;
+    aux1 = desvirada1, aux2 = desvirada2;
+    while(aux1!=NULL && aux2!=NULL){
+        if(aux1->valor > aux2-> valor){
+            return l1;
+        }
+        if(aux2->valor > aux1->valor){
+            return l2;
+        }
+    }
     return NULL;
+}
+// verifica se as listas sao iguai sem o sinal
+int verifica_igual_pos_negativa(Lista* l1, Lista* l2){
+    Lista *aux1 = l1;
+    Lista *aux2 = l2;
+    while(aux1!=NULL && aux2!=NULL){
+        if(aux1->valor != aux2->valor){
+            return 0;
+        }
+    }
+    return 1;
+
+}
+
+Lista* subtrai(Lista* l1, Lista* l2){
+    Lista *negativa;
+    Lista *positiva;
+    Lista *n3 = NULL;
+    Lista *maior_unidade;
+    int sinal_negativo;
+    int subtrai = 0;
+    char c;
+    int pos, neg;
+
+    if(verifica_negativa(l1) == 1){
+        negativa = l1;
+        positiva = l2;
+    }
+    if(verifica_negativa(l2) == 1){
+        negativa = l2;
+        positiva = l1;
+    }
+    //se negativa igual positiva sem o sinal entao retorna NULL
+    if(tamanho_lista(negativa)-1 == tamanho_lista(positiva)){
+        //
+        if(verifica_igual_pos_negativa(l1,l2) == 1) return NULL;
+        else{
+            // recebe a lista com a maior unidade para que seja feita a subtracao e heranca do sinal
+            maior_unidade = maior_valor_numero(l1,l2);
+            //se a lista de maior unidade for a negativa o sinal e guardado
+            if(iguais(negativa, maior_unidade) == 1) sinal_negativo = 1;
+            else sinal_negativo = 0;
+        }
+    }
+    // entra caso a lista de unidade maior seja a negativa com listas com mema qntd de numeros
+    if(tamanho_lista(negativa)-1 == tamanho_lista(positiva) && sinal_negativo == 1){
+
+    }
+
+    // se a negativa for maior subtrai e recebe o sinal de -
+    if(tamanho_lista(negativa)-1 > tamanho_lista(positiva)){
+        for(negativa; negativa!=NULL; negativa = negativa->proximo){
+            if(negativa->valor != '-'){
+                    if(positiva!=NULL){
+                            pos = convert_int(positiva->valor);
+                            neg = convert_int(negativa->valor);
+                        if(pos <= neg){
+                            if(subtrai == -1 && pos!=neg){
+                                subtrai = neg - pos  + subtrai;
+                                c = convert_char(subtrai);
+                                n3 = insere(n3,c);
+                                subtrai = 0;
+                            }
+                            else if(subtrai == -1 && pos == neg){
+                                n3 = insere(n3,'9');
+                                subtrai = -1;
+
+                            }
+                            else{
+                                subtrai = neg - pos + subtrai;
+                                c = convert_char(subtrai);
+                                n3 = insere(n3,c);
+                                subtrai = 0;
+                            }
+
+                        }
+                        else{
+                            subtrai =(( (10 + neg) - pos) + subtrai);
+                            c = convert_char(subtrai);
+                            n3 = insere(n3,c);
+                            subtrai = -1;
+
+                        }
+
+                        positiva = positiva->proximo;
+                    }
+                    //caso a lista positiva acabe
+                    else{
+                        if(subtrai == -1){
+                            neg = convert_int(negativa->valor);
+                            subtrai = (neg) + subtrai;
+
+                            if(subtrai == 0){
+                                if(negativa->proximo == NULL || negativa->proximo == '-'){
+                                    n3 = insere(n3, '-');
+                                    return n3;
+                                }
+                                else{
+                                    c = convert_char(subtrai);
+                                    n3 = insere(n3,c);
+                                    subtrai = 0;
+                                }
+                            }
+                            else{
+                                c = convert_char(subtrai);
+                                n3 = insere(n3, c);
+                                subtrai = 0;
+                            }
+                        }
+                        //utima verificacao
+                        else{
+                            n3 = insere(n3, negativa->valor);
+                        }
+                    }
+            }
+
+        }
+        n3 = insere(n3,'-');
+        return n3;
+
+}
+
+    // se a positiva é maior subtrai e fica sem sinal
+    else if(tamanho_lista(negativa)-1 < tamanho_lista(positiva)){
+        for(positiva; positiva!=NULL ; positiva = positiva->proximo){
+            pos = convert_int(positiva->valor);
+            //percorre negativa ate que seja diferente de - ou null
+            if(negativa!=NULL && negativa->valor !='-'){
+                neg = convert_int(negativa->valor);
+                if(neg <= pos){
+                    if(subtrai == -1 && pos!=neg){
+                        subtrai = (pos - neg)  + subtrai;
+                        c = convert_char(subtrai);
+                        n3 = insere(n3,c);
+                        subtrai = 0;
+                    }
+                    else if(subtrai == -1 && pos == neg){
+                        n3 = insere(n3,'9');
+                        subtrai = -1;
+
+                    }
+                    else{
+                        subtrai = (pos - neg) + subtrai;
+                        c = convert_char(subtrai);
+                        n3 = insere(n3,c);
+                        subtrai = 0;
+                    }
+
+            }
+            else{
+                subtrai =(( (10 + pos) - neg) + subtrai);
+                c = convert_char(subtrai);
+                n3 = insere(n3,c);
+                subtrai = -1;
+
+            }
+
+            negativa = negativa->proximo;
+
+        }
+
+        //caso a lista positiva acabe
+        else{
+            if(subtrai == -1){
+                    pos = convert_int(positiva->valor);
+                    subtrai = (pos) + subtrai;
+                    if(subtrai == 0){
+                        if(positiva->proximo == NULL){
+                            return n3;
+                        }
+                        else{
+                            c = convert_char(subtrai);
+                            n3 = insere(n3,c);
+                            subtrai = 0;
+                        }
+
+                    }
+                    else{
+                        c = convert_char(subtrai);
+                        n3 = insere(n3, c);
+                        subtrai = 0;
+                        }
+                    }
+                            //utima verificacao
+            else{
+                n3 = insere(n3, positiva->valor);
+            }
+        }
+    }
+        return n3;
+    }
+
+
+
+
+
 }
 
 int iguais(Lista* l1, Lista* l2){
     if(tamanho_lista(l1) != tamanho_lista(l2))return 0;
     else{
-        Lista* aux1;
-        Lista* aux2;
+        Lista* aux1 = l1;
+        Lista* aux2 = l2;
         for(aux1,aux2; aux1!=NULL, aux2!=NULL; aux1 = aux1->proximo, aux2 = aux2->proximo){
             if(aux1->valor!= aux2->valor) return 0;
         }
         return 1;
     }
-    return 1;
 }
 
 
@@ -245,7 +486,9 @@ Lista* soma(Lista* l1, Lista* l2){
         Lista* aux2 = l1;
 
     }
+    //se ambas forem negativas o sinal negativo e add no final
     if(verifica_negativa(l1) == 1 && verifica_negativa(l2) ==1 ) negativa = 1;
+    //se ambas forem negativas ou ambaspositivas efetuasse uma soma
     if(verifica_negativa(l1) == 1 && verifica_negativa(l2) ==1 || verifica_negativa(l1) == 0 && verifica_negativa(l2) == 0){
 
         for(aux1;aux1!=NULL; aux1 =aux1->proximo){
@@ -295,6 +538,7 @@ Lista* soma(Lista* l1, Lista* l2){
         }
     }
     else n3 = subtrai(l1,l2);
+    if(negativa == 1) n3 = insere_final(n3,'-');
     return n3;
 }
 
